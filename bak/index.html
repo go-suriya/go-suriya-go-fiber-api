@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Ordering App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header section -->
+        <header class="app-header">
+            <div class="table-info">
+                <span class="table-icon">🪑</span>
+                <span>1</span>
+            </div>
+            <div class="store-icon">🏪</div>
+            <div class="right-icons">
+                <span class="notification">🔔</span>
+                <span class="language">🇹🇭</span>
+            </div>
+        </header>
+
+        <!-- Pages Container -->
+        <main id="pageContainer">
+            <!-- Menu Page -->
+            <div class="page" id="menuPage">
+                <button class="category-btn">ของหวาน</button>
+                <div class="menu-item">
+                    <!-- Menu item content -->
+                </div>
+            </div>
+
+            <!-- Cart Page -->
+            <div class="page" id="cartPage">
+                <h1>ตะกร้าอาหาร</h1>
+                <div class="table-number">โต๊ะ 1</div>
+                <div class="cart-items">
+                    <div class="cart-item">
+                        <div class="item-info">
+                            <span class="avatar">G</span>
+                            <div class="item-details">
+                                <h3>เช้าท้วย</h3>
+                                <div class="quantity-controls">
+                                    <button>-</button>
+                                    <span>3</span>
+                                    <button>+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="price">฿45.00</div>
+                    </div>
+                </div>
+                <button class="submit-order">สั่งอาหาร</button>
+            </div>
+
+            <!-- Summary Page -->
+            <div class="page" id="summaryPage">
+                <h1>สรุปรายการ</h1>
+                <div class="order-number">เลขออเดอร์ 0001</div>
+                <div class="summary-items">
+                    <!-- Summary content -->
+                </div>
+                <button class="checkout">เช็คบิล</button>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item" onclick="changePage('menuPage')">
+                <span class="icon">🍽️</span>
+                <span>เมนูอาหาร</span>
+            </button>
+            <button class="nav-item" onclick="changePage('cartPage')">
+                <span class="icon">🛒</span>
+                <span>ตะกร้าอาหาร</span>
+                <span class="badge">3</span>
+            </button>
+            <button class="nav-item" onclick="changePage('summaryPage')">
+                <span class="icon">📄</span>
+                <span>สรุปรายการ</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

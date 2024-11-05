@@ -34,3 +34,17 @@ func ConnectDB() {
 
 	log.Println("Database connection established")
 }
+
+func CloseDB() {
+	DBConn, err := DB.DB()
+	if err != nil {
+		log.Fatalf("Failed to get database instance: %v", err)
+	}
+
+	// Close the database connection
+	if err := DBConn.Close(); err != nil {
+		log.Fatalf("Failed to close database connection: %v", err)
+	} else {
+		log.Println("Database connection closed")
+	}
+}
