@@ -17,8 +17,13 @@ func helloWorld(c *fiber.Ctx) error {
 }
 
 func main() {
-	database.ConnectDB()
-	defer database.CloseDB()
+	db := database.NewPostgresDatabase()
+
+	defer func() {
+		if err := db.Close(); err != nil {
+			fmt.Printf("Database shutdown error: %s\n", err)
+		}
+	}()
 
 	// fiber instance
 	app := fiber.New()

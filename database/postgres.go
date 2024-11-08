@@ -1,50 +1,63 @@
 package database
 
 import (
+	"fmt"
 	"log"
-	"time"
+	"sync"
 
-	"github.com/avast/retry-go/v4"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-func ConnectDB() {
-	dsn := "host=localhost user=postgres password=168 dbname=go_fiber port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-
-	err := retry.Do(
-		func() error {
-			var dbErr error
-			DB, dbErr = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-			if dbErr != nil {
-				log.Println("Database connection failed. Retrying...")
-			}
-			return dbErr
-		},
-		retry.Attempts(5),
-		retry.Delay(2*time.Second),
-		retry.DelayType(retry.BackOffDelay),
-	)
-
-	if err != nil {
-		log.Fatalf("Could not connect to the database after 5 attempts: %v", err)
-	}
-
-	log.Println("Database connection established")
+type postgresDatabase struct {
+	*gorm.DB
 }
 
-func CloseDB() {
-	DBConn, err := DB.DB()
+var (
+	postgresDatabaseInstace *postgresDatabase
+	once                    sync.Once
+)
+
+func NewPostgresDatabase() Database {
+	once.Do(func() {
+		dsn := fmt.Sprintf(
+			"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s search_path=%s",
+			"localhost",
+			"postgres",
+			"168",
+			"go_fiber",
+			5432,
+			"disable",
+			"public",
+		)
+
+		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err != nil {
+			panic(err)
+		}
+
+		log.Printf("Connected to database %s", "go_fiber")
+
+		postgresDatabaseInstace = &postgresDatabase{conn}
+	})
+
+	return postgresDatabaseInstace
+}
+
+func (db *postgresDatabase) Connect() *gorm.DB {
+	return postgresDatabaseInstace.DB
+}
+
+func (db *postgresDatabase) Close() error {
+	sqlDB, err := db.DB.DB()
 	if err != nil {
-		log.Fatalf("Failed to get database instance: %v", err)
+		return fmt.Errorf("error getting underlying sql.DB: %v", err)
 	}
 
-	// Close the database connection
-	if err := DBConn.Close(); err != nil {
-		log.Fatalf("Failed to close database connection: %v", err)
-	} else {
-		log.Println("Database connection closed")
+	if err := sqlDB.Close(); err != nil {
+		return fmt.Errorf("error closing database connection: %v", err)
 	}
+
+	log.Printf("Closed connection to database %s", "go_fiber")
+	return nil
 }
