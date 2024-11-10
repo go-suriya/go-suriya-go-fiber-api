@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/go-suriya/go-fiber-api/config"
 	"github.com/go-suriya/go-fiber-api/database"
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,7 +19,12 @@ func helloWorld(c *fiber.Ctx) error {
 }
 
 func main() {
-	db := database.NewPostgresDatabase()
+	config, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	db := database.NewPostgresDatabase(*config)
 
 	defer func() {
 		if err := db.Close(); err != nil {
@@ -31,11 +38,7 @@ func main() {
 	// routes
 	app.Get("/", helloWorld)
 
-	go func() {
-		if err := app.Listen("0.0.0.0:" + "3000"); err != nil {
-			fmt.Printf("Fiber server Listen error: %s\n", err)
-		}
-	}()
+	app.Listen(config.GetPort())
 
 	gracefulShutdown(app)
 }

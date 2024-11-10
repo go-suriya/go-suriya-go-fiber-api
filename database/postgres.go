@@ -5,6 +5,7 @@ import (
 	"log"
 	"sync"
 
+	"github.com/go-suriya/go-fiber-api/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,18 +19,9 @@ var (
 	once                    sync.Once
 )
 
-func NewPostgresDatabase() Database {
+func NewPostgresDatabase(config config.Config) Database {
 	once.Do(func() {
-		dsn := fmt.Sprintf(
-			"host=%s user=%s password=%s dbname=%s port=%d sslmode=%s search_path=%s",
-			"localhost",
-			"postgres",
-			"168",
-			"go_fiber",
-			5432,
-			"disable",
-			"public",
-		)
+		dsn := config.GetDSN()
 
 		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
