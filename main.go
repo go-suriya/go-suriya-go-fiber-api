@@ -38,9 +38,9 @@ func main() {
 	// routes
 	app.Get("/", helloWorld)
 
-	app.Listen(config.GetPort())
+	go gracefulShutdown(app)
 
-	gracefulShutdown(app)
+	app.Listen(config.GetPort())
 }
 
 func gracefulShutdown(app *fiber.App) {
